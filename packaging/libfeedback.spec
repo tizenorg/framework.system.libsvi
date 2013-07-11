@@ -18,6 +18,7 @@ BuildRequires:  pkgconfig(haptic)
 BuildRequires:  pkgconfig(libxml-2.0)
 BuildRequires:  pkgconfig(glib-2.0)
 BuildRequires:  pkgconfig(capi-base-common)
+Requires(post):	svi-data
 
 %description
 Feedback library for playing sound, vibration and led
@@ -53,7 +54,6 @@ Group:		Development/Libraries
 
 %description -n svi-data
 svi resource package
-
 
 %prep
 %setup -q 
