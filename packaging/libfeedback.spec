@@ -74,6 +74,9 @@ mkdir -p %{buildroot}/opt/share/svi/sound/operation
 mkdir -p %{buildroot}/opt/share/svi/haptic/default
 mkdir -p %{buildroot}/opt/share/svi/haptic/touch
 
+mkdir -p %{buildroot}%{_datadir}/license
+cp LICENSE.APLv2 %{buildroot}%{_datadir}/license/%{name}
+
 %post -p /sbin/ldconfig
 
 %post -n svi-data
@@ -118,6 +121,7 @@ rm -rf /opt/share/svi/
 %manifest libfeedback.manifest
 %defattr(-,root,root,-)
 %{_libdir}/libfeedback.so.*
+%{_datadir}/license/%{name}
 
 %files -n libfeedback-devel
 %defattr(-,root,root,-)
