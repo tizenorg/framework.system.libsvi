@@ -1,0 +1,11 @@
+prefix=@PREFIX@
+exec_prefix=@EXEC_PREFIX@
+libdir=@LIBDIR@
+includedir=/usr/include/svi
+
+Name: svi
+Description: configuration system library
+Version: @VERSION@
+Requires:
+Libs: -L${libdir} -lsvi
+Cflags: -I${includedir}
