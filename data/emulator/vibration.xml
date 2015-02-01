@@ -3,90 +3,11 @@
 	<label>svi-data</label>
 	<description>Vibration Resource</description>
 	<vibration>
-		<label>FEEDBACK_PATTERN_SIP</label>
-		<data>TOUCH</data>
-	</vibration>
-	<vibration>
-		<label>FEEDBACK_PATTERN_SIP_BACKSPACE</label>
-		<data>TOUCH</data>
-	</vibration>
-	<vibration>
-		<label>FEEDBACK_PATTERN_SIP_FUNCTION</label>
-		<data>TOUCH</data>
-	</vibration>
-	<vibration>
-		<label>FEEDBACK_PATTERN_SIP_FJKEY</label>
-		<data>TOUCH</data>
-	</vibration>
-	<vibration>
-		<label>FEEDBACK_PATTERN_MAX_CHARACTER</label>
-		<data>TOUCH</data>
-	</vibration>
-	<vibration>
-		<label>FEEDBACK_PATTERN_KEY0</label>
-	</vibration>
-	<vibration>
-		<label>FEEDBACK_PATTERN_KEY1</label>
-		<data>TOUCH</data>
-	</vibration>
-	<vibration>
-		<label>FEEDBACK_PATTERN_KEY2</label>
-		<data>TOUCH</data>
-	</vibration>
-	<vibration>
-		<label>FEEDBACK_PATTERN_KEY3</label>
-		<data>TOUCH</data>
-	</vibration>
-	<vibration>
-		<label>FEEDBACK_PATTERN_KEY4</label>
-		<data>TOUCH</data>
-	</vibration>
-	<vibration>
-		<label>FEEDBACK_PATTERN_KEY5</label>
-		<data>TOUCH</data>
-	</vibration>
-	<vibration>
-		<label>FEEDBACK_PATTERN_KEY6</label>
-		<data>TOUCH</data>
-	</vibration>
-	<vibration>
-		<label>FEEDBACK_PATTERN_KEY7</label>
-		<data>TOUCH</data>
-	</vibration>
-	<vibration>
-		<label>FEEDBACK_PATTERN_KEY8</label>
-		<data>TOUCH</data>
-	</vibration>
-	<vibration>
-		<label>FEEDBACK_PATTERN_KEY9</label>
-		<data>TOUCH</data>
-	</vibration>
-	<vibration>
-		<label>FEEDBACK_PATTERN_KEY_STAR</label>
-		<data>TOUCH</data>
-	</vibration>
-	<vibration>
-		<label>FEEDBACK_PATTERN_KEY_SHARP</label>
-		<data>TOUCH</data>
-	</vibration>
-	<vibration>
-		<label>FEEDBACK_PATTERN_KEY_BACK</label>
+		<label>FEEDBACK_PATTERN_TAP</label>
 		<data>TOUCH</data>
 	</vibration>
 	<vibration>
 		<label>FEEDBACK_PATTERN_HOLD</label>
-		<data>TOUCH</data>
-	</vibration>
-	<vibration>
-		<label>FEEDBACK_PATTERN_MULTI_TAP</label>
-		<data>TOUCH</data>
-	</vibration>
-	<vibration>
-		<label>FEEDBACK_PATTERN_HW_TAP</label>
-		<data>TOUCH</data>
-	</vibration>
-	<vibration>
-		<label>FEEDBACK_PATTERN_HW_HOLD</label>
 		<data>TOUCH</data>
 	</vibration>
 	<vibration>
@@ -138,23 +59,19 @@
 		<data>NOTIFICATION</data>
 	</vibration>
 	<vibration>
-		<label>FEEDBACK_PATTERN_SMART_ALERT</label>
-		<data>SYSTEM</data>
-	</vibration>
-	<vibration>
-		<label>FEEDBACK_PATTERN_POWERON</label>
-		<data>SYSTEM</data>
-	</vibration>
-	<vibration>
-		<label>FEEDBACK_PATTERN_POWEROFF</label>
-		<data>SYSTEM</data>
-	</vibration>
-	<vibration>
 		<label>FEEDBACK_PATTERN_CHARGERCONN</label>
 		<data>SYSTEM</data>
 	</vibration>
 	<vibration>
 		<label>FEEDBACK_PATTERN_CHARGERCONN_ON_CALL</label>
+		<data>SYSTEM</data>
+	</vibration>
+	<vibration>
+		<label>FEEDBACK_PATTERN_CHARGING_ERROR</label>
+		<data>SYSTEM</data>
+	</vibration>
+	<vibration>
+		<label>FEEDBACK_PATTERN_CHARGING_ERROR_ON_CALL</label>
 		<data>SYSTEM</data>
 	</vibration>
 	<vibration>
@@ -166,11 +83,11 @@
 		<data>SYSTEM</data>
 	</vibration>
 	<vibration>
-		<label>FEEDBACK_PATTERN_OUTGOING_CALL</label>
+		<label>FEEDBACK_PATTERN_CALLCONNECT</label>
 		<data>SYSTEM</data>
 	</vibration>
 	<vibration>
-		<label>FEEDBACK_PATTERN_MINUTEMINDER</label>
+		<label>FEEDBACK_PATTERN_DISCALLCONNECT</label>
 		<data>SYSTEM</data>
 	</vibration>
 	<vibration>
@@ -178,11 +95,15 @@
 		<data>SYSTEM</data>
 	</vibration>
 	<vibration>
-		<label>FEEDBACK_PATTERN_MMS</label>
+		<label>FEEDBACK_PATTERN_CONNECTED</label>
 		<data>SYSTEM</data>
 	</vibration>
 	<vibration>
-		<label>FEEDBACK_PATTERN_HOURLY_ALERT</label>
+		<label>FEEDBACK_PATTERN_DISCONNECTED</label>
+		<data>SYSTEM</data>
+	</vibration>
+	<vibration>
+		<label>FEEDBACK_PATTERN_BT_PAIRING</label>
 		<data>SYSTEM</data>
 	</vibration>
 	<vibration>
@@ -191,6 +112,46 @@
 	</vibration>
 	<vibration>
 		<label>FEEDBACK_PATTERN_SEND_SOS_MESSAGE</label>
+		<data>SYSTEM</data>
+	</vibration>
+	<vibration>
+		<label>FEEDBACK_PATTERN_END_SOS_MESSAGE</label>
+		<data>SYSTEM</data>
+	</vibration>
+	<vibration>
+		<label>FEEDBACK_PATTERN_CMAS</label>
+		<data>SYSTEM</data>
+	</vibration>
+	<vibration>
+		<label>FEEDBACK_PATTERN_SPEED_UP</label>
+		<data>SYSTEM</data>
+	</vibration>
+	<vibration>
+		<label>FEEDBACK_PATTERN_SLOW_DOWN</label>
+		<data>SYSTEM</data>
+	</vibration>
+	<vibration>
+		<label>FEEDBACK_PATTERN_KEEP_THIS_PACE</label>
+		<data>SYSTEM</data>
+	</vibration>
+	<vibration>
+		<label>FEEDBACK_PATTERN_GOAL_ACHIEVED</label>
+		<data>SYSTEM</data>
+	</vibration>
+	<vibration>
+		<label>FEEDBACK_PATTERN_EXERCISE_COUNT</label>
+		<data>SYSTEM</data>
+	</vibration>
+	<vibration>
+		<label>FEEDBACK_PATTERN_START_CUE</label>
+		<data>SYSTEM</data>
+	</vibration>
+	<vibration>
+		<label>FEEDBACK_PATTERN_SUCCESS</label>
+		<data>SYSTEM</data>
+	</vibration>
+	<vibration>
+		<label>FEEDBACK_PATTERN_FAILURE</label>
 		<data>SYSTEM</data>
 	</vibration>
 </config>

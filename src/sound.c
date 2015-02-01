@@ -60,12 +60,12 @@ static void feedback_lock_sndstatus_cb(keynode_t *key, void* data)
 {
 	lock_sndstatus = vconf_keynode_get_bool(key);
 }
-#ifndef MOBILE
+
 static void feedback_keytone_sndstatus_cb(keynode_t *key, void* data)
 {
 	keytone_sndstatus = vconf_keynode_get_bool(key);
 }
-#endif
+
 static void feedback_camerastatus_cb(keynode_t *key, void* data)
 {
 	camerastatus = vconf_keynode_get_int(key);
@@ -100,6 +100,7 @@ static bool get_always_alert_case(feedback_pattern_e pattern)
 	case FEEDBACK_PATTERN_SMART_ALERT:
 	case FEEDBACK_PATTERN_SEND_SOS_MESSAGE:
 	case FEEDBACK_PATTERN_END_SOS_MESSAGE:
+	case FEEDBACK_PATTERN_CMAS:
 		return true;
 	case FEEDBACK_PATTERN_SCREEN_CAPTURE:
 		if (camerastatus && shutter_sndstatus)
@@ -181,12 +182,10 @@ static void sound_init(void)
 
 	if (vconf_get_bool(VCONFKEY_SETAPPL_SOUND_LOCK_BOOL, &lock_sndstatus) < 0)
 		_W("VCONFKEY_SETAPPL_SOUND_LOCK_BOOL ==> FAIL!!");
-#ifdef MOBILE
-	keytone_sndstatus = true;
-#else
+
 	if (vconf_get_bool(VCONFKEY_SETAPPL_BUTTON_SOUNDS_BOOL, &keytone_sndstatus) < 0)
 		_W("VCONFKEY_SETAPPL_BUTTON_SOUNDS_BOOL ==> FAIL!!");
-#endif
+
 	/* check camera status */
 	if (vconf_get_int(VCONFKEY_CAMERA_STATE, &camerastatus) < 0)
 		_W("VCONFKEY_CAMERA_STATE ==> FAIL!!");
@@ -199,9 +198,7 @@ static void sound_init(void)
 	/* add watch for status value */
 	vconf_notify_key_changed(VCONFKEY_SETAPPL_TOUCH_SOUNDS_BOOL, feedback_touch_sndstatus_cb, NULL);
 	vconf_notify_key_changed(VCONFKEY_SETAPPL_SOUND_LOCK_BOOL, feedback_lock_sndstatus_cb, NULL);
-#ifndef MOBILE
 	vconf_notify_key_changed(VCONFKEY_SETAPPL_BUTTON_SOUNDS_BOOL, feedback_keytone_sndstatus_cb, NULL);
-#endif
 	vconf_notify_key_changed(VCONFKEY_CAMERA_STATE, feedback_camerastatus_cb, NULL);
 }
 
@@ -210,9 +207,7 @@ static void sound_exit(void)
 	/* remove watch */
 	vconf_ignore_key_changed(VCONFKEY_SETAPPL_TOUCH_SOUNDS_BOOL, feedback_touch_sndstatus_cb);
 	vconf_ignore_key_changed(VCONFKEY_SETAPPL_SOUND_LOCK_BOOL, feedback_lock_sndstatus_cb);
-#ifndef MOBILE
 	vconf_ignore_key_changed(VCONFKEY_SETAPPL_BUTTON_SOUNDS_BOOL, feedback_keytone_sndstatus_cb);
-#endif
 	vconf_ignore_key_changed(VCONFKEY_CAMERA_STATE, feedback_camerastatus_cb);
 
 	if (v_doc) {
@@ -333,7 +328,17 @@ static int sound_get_path(feedback_pattern_e pattern, char *buf, unsigned int bu
 
 static int sound_set_path(feedback_pattern_e pattern, char *path)
 {
+	struct stat buf;
 	char *ppath;
+
+	/*
+	 * check the path is valid
+	 * if path is null, below operation is ignored
+	 */
+	if (path && stat(path, &buf)) {
+		_E("%s is not presents", path);
+		return -errno;
+	}
 
 	ppath = sound_file[pattern];
 

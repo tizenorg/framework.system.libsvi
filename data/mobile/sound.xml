@@ -15,6 +15,14 @@
 		<data>/usr/share/feedback/sound/touch/sip_backspace.wav</data>
 	</sound>
 	<sound>
+		<label>FEEDBACK_PATTERN_SIP_FUNCTION</label>
+		<data>/usr/share/feedback/sound/touch/sip.wav</data>
+	</sound>
+	<sound>
+		<label>FEEDBACK_PATTERN_SIP_FJKEY</label>
+		<data>/usr/share/feedback/sound/touch/sip.wav</data>
+	</sound>
+	<sound>
 		<label>FEEDBACK_PATTERN_MAX_CHARACTER</label>
 		<data>/usr/share/feedback/sound/touch/sip.wav</data>
 	</sound>
@@ -67,12 +75,12 @@
 		<data>/usr/share/feedback/sound/touch/keysharp.wav</data>
 	</sound>
 	<sound>
-		<label>FEEDBACK_PATTERN_GENERAL</label>
-		<data>/usr/share/feedback/sound/operation/call_connect.wav</data>
+		<label>FEEDBACK_PATTERN_KEY_BACK</label>
+		<data>/usr/share/feedback/sound/touch/touch.wav</data>
 	</sound>
 	<sound>
-		<label>FEEDBACK_PATTERN_GENERAL_ON_CALL</label>
-		<data>/usr/share/feedback/sound/operation/call_connect.wav</data>
+		<label>FEEDBACK_PATTERN_HW_TAP</label>
+		<data>/usr/share/feedback/sound/touch/touch.wav</data>
 	</sound>
 	<sound>
 		<label>FEEDBACK_PATTERN_POWERON</label>
@@ -85,14 +93,6 @@
 	<sound>
 		<label>FEEDBACK_PATTERN_CHARGERCONN_ON_CALL</label>
 		<data>/usr/share/feedback/sound/operation/charger_connection.wav</data>
-	</sound>
-	<sound>
-		<label>FEEDBACK_PATTERN_FULLCHARGED</label>
-		<data>/usr/share/feedback/sound/operation/fully_charged.wav</data>
-	</sound>
-	<sound>
-		<label>FEEDBACK_PATTERN_FULLCHARGED_ON_CALL</label>
-		<data>/usr/share/feedback/sound/operation/fully_charged.wav</data>
 	</sound>
 	<sound>
 		<label>FEEDBACK_PATTERN_LOWBATT</label>
@@ -111,6 +111,18 @@
 		<data>/usr/share/feedback/sound/operation/unlock.wav</data>
 	</sound>
 	<sound>
+		<label>FEEDBACK_PATTERN_LOCK_SWIPE</label>
+		<data>/usr/share/feedback/sound/operation/lock.wav</data>
+	</sound>
+	<sound>
+		<label>FEEDBACK_PATTERN_UNLOCK_SWIPE</label>
+		<data>/usr/share/feedback/sound/operation/unlock.wav</data>
+	</sound>
+	<sound>
+		<label>FEEDBACK_PATTERN_GEOMETRIC_LOCK</label>
+		<data>/usr/share/feedback/sound/operation/lock.wav</data>
+	</sound>
+	<sound>
 		<label>FEEDBACK_PATTERN_CALLCONNECT</label>
 		<data>/usr/share/feedback/sound/operation/call_connect.wav</data>
 	</sound>
@@ -121,6 +133,10 @@
 	<sound>
 		<label>FEEDBACK_PATTERN_MINUTEMINDER</label>
 		<data>/usr/share/feedback/sound/operation/minute_minder.wav</data>
+	</sound>
+	<sound>
+		<label>FEEDBACK_PATTERN_SILENT_OFF</label>
+		<data>/usr/share/feedback/sound/operation/volume_control.wav</data>
 	</sound>
 	<sound>
 		<label>FEEDBACK_PATTERN_SCREEN_CAPTURE</label>

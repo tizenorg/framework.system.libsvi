@@ -23,31 +23,20 @@
 #include <assert.h>
 #include <limits.h>
 #include <vconf.h>
-#ifdef MOBILE
-#include <haptic.h>
-#endif
+#include <sys/stat.h>
 
 #include "feedback-ids.h"
 #include "common.h"
 #include "log.h"
 #include "devices.h"
 #include "xmlparser.h"
-#ifndef MOBILE
 #include "dbus.h"
-#endif
 
 #define DEFAULT_VIB_LEVEL			3
 #define HAPTIC_FEEDBACK_STEP		20 /**< feedback max / slider step */
 
 #define HAPTIC_DEVICE				0
 
-#ifdef MOBILE
-#define DEFAULT_FEEDBACK_HANDLE		0x0F
-#endif
-
-#define VIBRATION_XML				"/usr/share/feedback/vibration.xml"
-
-#ifndef MOBILE
 enum haptic_priority
 {
 	HAPTIC_PRIORITY_MIN = 0,
@@ -61,10 +50,12 @@ enum haptic_iteration
 	HAPTIC_ITERATION_INFINITE = 256,
 };
 
+#define VIBRATION_XML				"/usr/share/feedback/vibration.xml"
+
 #define METHOD_OPEN					"OpenDevice"
 #define METHOD_CLOSE				"CloseDevice"
 #define METHOD_VIBRATE_BUFFER		"VibrateBuffer"
-#endif
+#define METHOD_STOP					"StopDevice"
 
 static int vibstatus;
 static int noti_vibstatus;
@@ -77,9 +68,8 @@ static xmlDocPtr v_doc;
 
 static char haptic_file[FEEDBACK_PATTERN_END][NAME_MAX];
 
-static int haptic_open_internal(void)
+static int haptic_open(void)
 {
-#ifndef MOBILE
 	char *arr[1];
 	char buf_index[32];
 
@@ -89,21 +79,10 @@ static int haptic_open_internal(void)
 	return dbus_method_sync(DEVICED_BUS_NAME, DEVICED_PATH_HAPTIC,
 			DEVICED_INTERFACE_HAPTIC, METHOD_OPEN,
 			"i", arr);
-#else
-	haptic_device_h handle;
-	int ret;
-
-	ret = haptic_open(HAPTIC_DEVICE_ALL, &handle);
-	if (ret != HAPTIC_ERROR_NONE)
-		return DEFAULT_FEEDBACK_HANDLE;
-
-	return (int)handle;
-#endif
 }
 
-static int haptic_close_internal(unsigned int handle)
+static int haptic_close(unsigned int handle)
 {
-#ifndef MOBILE
 	char *arr[1];
 	char buf_handle[32];
 
@@ -113,19 +92,15 @@ static int haptic_close_internal(unsigned int handle)
 	return dbus_method_sync(DEVICED_BUS_NAME, DEVICED_PATH_HAPTIC,
 			DEVICED_INTERFACE_HAPTIC, METHOD_CLOSE,
 			"u", arr);
-#else
-	return haptic_close((haptic_device_h)handle);
-#endif
 }
 
-static int haptic_vibrate_buffer_internal(unsigned int handle,
+static int haptic_vibrate_buffer(unsigned int handle,
 								const unsigned char *buffer,
 								int size,
 								int iteration,
 								int feedback,
 								int priority)
 {
-#ifndef MOBILE
 	char *arr[6];
 	char buf_handle[32];
 	char buf_iteration[32];
@@ -148,9 +123,19 @@ static int haptic_vibrate_buffer_internal(unsigned int handle,
 	return dbus_method_sync(DEVICED_BUS_NAME, DEVICED_PATH_HAPTIC,
 			DEVICED_INTERFACE_HAPTIC, METHOD_VIBRATE_BUFFER,
 			"uayiii", arr);
-#else
-	return haptic_vibrate_buffer_with_detail((haptic_device_h)handle, buffer, iteration, feedback, priority, NULL);
-#endif
+}
+
+static int haptic_vibrate_stop(unsigned int handle)
+{
+	char *arr[1];
+	char buf_handle[32];
+
+	snprintf(buf_handle, sizeof(buf_handle), "%u", handle);
+	arr[0] = buf_handle;
+
+	return dbus_method_sync(DEVICED_BUS_NAME, DEVICED_PATH_HAPTIC,
+			DEVICED_INTERFACE_HAPTIC, METHOD_STOP,
+			"u", arr);
 }
 
 static unsigned char* convert_file_to_buffer(const char *file_name, int *size)
@@ -200,17 +185,11 @@ error:
 	return NULL;
 }
 
-#ifndef MOBILE
 static void feedback_noti_vibstatus_cb(keynode_t *key, void* data)
 {
 	noti_vibstatus = vconf_keynode_get_bool(key);
 }
 
-static void feedback_feedbackstatus_cb(keynode_t *key, void* data)
-{
-	feedbackstatus = vconf_keynode_get_bool(key);
-}
-#endif
 static void feedback_vib_cb(keynode_t *key, void* data)
 {
 	vib_level = vconf_keynode_get_int(key);
@@ -219,6 +198,11 @@ static void feedback_vib_cb(keynode_t *key, void* data)
 static void feedback_noti_cb(keynode_t *key, void* data)
 {
 	noti_level = vconf_keynode_get_int(key);
+}
+
+static void feedback_feedbackstatus_cb(keynode_t *key, void* data)
+{
+	feedbackstatus = vconf_keynode_get_bool(key);
 }
 
 static int get_priority(feedback_pattern_e pattern)
@@ -233,9 +217,7 @@ static int get_haptic_level(feedback_pattern_e pattern)
 {
 	int level;
 
-	if (pattern >= FEEDBACK_PATTERN_SIP && pattern <= FEEDBACK_PATTERN_SIP_FJKEY)
-		return DEFAULT_VIB_LEVEL * HAPTIC_FEEDBACK_STEP;
-	else if (pattern >= FEEDBACK_PATTERN_MESSAGE && pattern <= FEEDBACK_PATTERN_SMART_ALERT)
+	if (pattern >= FEEDBACK_PATTERN_MESSAGE && pattern <= FEEDBACK_PATTERN_SMART_ALERT)
 		level = noti_level * HAPTIC_FEEDBACK_STEP;
 	else
 		level = vib_level * HAPTIC_FEEDBACK_STEP;
@@ -280,9 +262,11 @@ static bool get_always_alert_case(feedback_pattern_e pattern)
 		if (noti_vibstatus)
 			return true;
 		break;
+	case FEEDBACK_PATTERN_3RD_APPLICATION:
 	case FEEDBACK_PATTERN_SMART_ALERT:
 	case FEEDBACK_PATTERN_SEND_SOS_MESSAGE:
 	case FEEDBACK_PATTERN_END_SOS_MESSAGE:
+	case FEEDBACK_PATTERN_CMAS:
 	case FEEDBACK_PATTERN_OUTGOING_CALL:
 	case FEEDBACK_PATTERN_MMS:
 	case FEEDBACK_PATTERN_HOURLY_ALERT:
@@ -326,7 +310,6 @@ static int get_xml_data(xmlDocPtr doc, feedback_pattern_e pattern, struct xmlDat
 {
 	xmlNodePtr cur;
 	struct xmlData *retData;
-	int ret;
 
 	cur = xml_find(doc, VIBRATION_STR, (const xmlChar*)str_pattern[pattern]);
 	/* This pattern does not have sound file to play */
@@ -336,12 +319,6 @@ static int get_xml_data(xmlDocPtr doc, feedback_pattern_e pattern, struct xmlDat
 	retData = xml_parse(doc, cur);
 	if (retData == NULL) {
 		_E("xml_parse fail");
-		return -EPERM;
-	}
-
-	ret = xml_decode_data(retData);
-	if (ret < 0) {
-		_E("xml_decode_data fail");
 		return -EPERM;
 	}
 
@@ -369,9 +346,9 @@ static void vibrator_init(void)
 	}
 
 	/* Vibration Init */
-	ret = haptic_open_internal();
+	ret = haptic_open();
 	if (ret < 0) {
-		_E("haptic_open_internal ==> FAIL!! : %d", ret);
+		_E("haptic_open ==> FAIL!! : %d", ret);
 		xml_close(v_doc);
 		v_doc = NULL;
 		return;
@@ -380,18 +357,9 @@ static void vibrator_init(void)
 	/* Set vibration handle */
 	v_handle = (unsigned int)ret;
 
-#ifdef MOBILE
-	noti_vibstatus = true;
-	feedbackstatus = true;
-#else
 	/* check vibration status */
 	if (vconf_get_bool(VCONFKEY_SETAPPL_VIBRATE_WHEN_NOTIFICATION_BOOL, &noti_vibstatus) < 0)
 		_W("VCONFKEY_SETAPPL_VIBRATION_STATUS_BOOL ==> FAIL!!");
-
-	/* feedback Init */
-	if(vconf_get_bool(VCONFKEY_SETAPPL_HAPTIC_FEEDBACK_STATUS_BOOL, &feedbackstatus) < 0)
-		_W("VCONFKEY_SETAPPL_HAPTIC_FEEDBACK_STATUS_BOOL ==> FAIL!!");
-#endif
 
 	/* check vib_level */
 	if (vconf_get_int(VCONFKEY_SETAPPL_TOUCH_FEEDBACK_VIBRATION_LEVEL_INT, &vib_level) < 0)
@@ -401,13 +369,15 @@ static void vibrator_init(void)
 	if (vconf_get_int(VCONFKEY_SETAPPL_NOTI_VIBRATION_LEVEL_INT, &noti_level) < 0)
 		_W("VCONFKEY_SETAPPL_NOTI_VIBRATION_LEVEL_INT ==> FAIL!!");
 
+	/* feedback Init */
+	if(vconf_get_bool(VCONFKEY_SETAPPL_HAPTIC_FEEDBACK_STATUS_BOOL, &feedbackstatus) < 0)
+		_W("VCONFKEY_SETAPPL_HAPTIC_FEEDBACK_STATUS_BOOL ==> FAIL!!");
+
 	/* add watch for status value */
-#ifndef MOBILE
 	vconf_notify_key_changed(VCONFKEY_SETAPPL_VIBRATE_WHEN_NOTIFICATION_BOOL, feedback_noti_vibstatus_cb, NULL);
-	vconf_notify_key_changed(VCONFKEY_SETAPPL_HAPTIC_FEEDBACK_STATUS_BOOL, feedback_feedbackstatus_cb, NULL);
-#endif
 	vconf_notify_key_changed(VCONFKEY_SETAPPL_TOUCH_FEEDBACK_VIBRATION_LEVEL_INT, feedback_vib_cb, NULL);
 	vconf_notify_key_changed(VCONFKEY_SETAPPL_NOTI_VIBRATION_LEVEL_INT, feedback_noti_cb, NULL);
+	vconf_notify_key_changed(VCONFKEY_SETAPPL_HAPTIC_FEEDBACK_STATUS_BOOL, feedback_feedbackstatus_cb, NULL);
 }
 
 static void vibrator_exit(void)
@@ -415,17 +385,15 @@ static void vibrator_exit(void)
 	int ret;
 
 	/* remove watch */
-#ifndef MOBILE
 	vconf_ignore_key_changed(VCONFKEY_SETAPPL_VIBRATE_WHEN_NOTIFICATION_BOOL, feedback_noti_vibstatus_cb);
-	vconf_ignore_key_changed(VCONFKEY_SETAPPL_HAPTIC_FEEDBACK_STATUS_BOOL, feedback_feedbackstatus_cb);
-#endif
 	vconf_ignore_key_changed(VCONFKEY_SETAPPL_TOUCH_FEEDBACK_VIBRATION_LEVEL_INT, feedback_vib_cb);
 	vconf_ignore_key_changed(VCONFKEY_SETAPPL_NOTI_VIBRATION_LEVEL_INT, feedback_noti_cb);
+	vconf_ignore_key_changed(VCONFKEY_SETAPPL_HAPTIC_FEEDBACK_STATUS_BOOL, feedback_feedbackstatus_cb);
 
 	if (v_handle) {
-		ret = haptic_close_internal(v_handle);
+		ret = haptic_close(v_handle);
 		if (ret < 0)
-			_E("haptic_close_internal is failed : %d", ret);
+			_E("haptic_close is failed : %d", ret);
 		v_handle = 0;
 	}
 
@@ -471,10 +439,10 @@ static int vibrator_play(feedback_pattern_e pattern)
 			return -EPERM;
 		}
 
-		ret = haptic_vibrate_buffer_internal(v_handle, buf, size, HAPTIC_ITERATION_ONCE,
+		ret = haptic_vibrate_buffer(v_handle, buf, size, HAPTIC_ITERATION_ONCE,
 				get_haptic_level(pattern), get_priority(pattern));
 		if (ret < 0) {
-			_E("haptic_vibrate_buffer_internal is failed");
+			_E("haptic_vibrate_buffer is failed");
 			free(buf);
 			return -EPERM;
 		}
@@ -501,15 +469,34 @@ static int vibrator_play(feedback_pattern_e pattern)
 	}
 
 	/* play haptic buffer */
-	ret = haptic_vibrate_buffer_internal(v_handle, (unsigned char*)data->data, data->size, HAPTIC_ITERATION_ONCE,
+	ret = haptic_vibrate_buffer(v_handle, (unsigned char*)data->data, data->size, HAPTIC_ITERATION_ONCE,
 					get_haptic_level(pattern), get_priority(pattern));
 	if (ret < 0) {
-		_E("haptic_vibrate_buffer_internal is failed");
+		_E("haptic_vibrate_buffer is failed");
 		release_xml_data(data);
 		return -EPERM;
 	}
 
 	release_xml_data(data);
+	return 0;
+}
+
+static int vibrator_stop(void)
+{
+	int ret;
+
+	if (!v_handle || !v_doc) {
+		_E("Not initialize");
+		return -EPERM;
+	}
+
+	/* stop haptic device */
+	ret = haptic_vibrate_stop(v_handle);
+	if (ret < 0) {
+		_E("haptic_vibrate_stop is failed");
+		return -EPERM;
+	}
+
 	return 0;
 }
 
@@ -532,7 +519,17 @@ static int vibrator_get_path(feedback_pattern_e pattern, char *buf, unsigned int
 
 static int vibrator_set_path(feedback_pattern_e pattern, char *path)
 {
+	struct stat buf;
 	char *ppath;
+
+	/*
+	 * check the path is valid
+	 * if path is null, below operation is ignored
+	 */
+	if (path && stat(path, &buf)) {
+		_E("%s is not presents", path);
+		return -errno;
+	}
 
 	ppath = haptic_file[pattern];
 
@@ -551,6 +548,7 @@ static const struct device_ops vibrator_device_ops = {
 	.init = vibrator_init,
 	.exit = vibrator_exit,
 	.play = vibrator_play,
+	.stop = vibrator_stop,
 	.get_path = vibrator_get_path,
 	.set_path = vibrator_set_path,
 };

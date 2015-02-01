@@ -195,6 +195,53 @@ API int feedback_play_type(feedback_type_e type, feedback_pattern_e pattern)
 	return FEEDBACK_ERROR_NONE;
 }
 
+API int feedback_play_type_by_name(char *type, char *pattern)
+{
+	feedback_type_e etype;
+	feedback_pattern_e epattern;
+
+	if (!type || !pattern) {
+		_E("Invalid parameter : type(%x), pattern(%x)", type, pattern);
+		return FEEDBACK_ERROR_INVALID_PARAMETER;
+	}
+
+	for (etype = FEEDBACK_TYPE_NONE; etype < FEEDBACK_TYPE_END; ++etype) {
+		if (!strncmp(type, str_type[etype], strlen(type)))
+			break;
+	}
+
+	if (etype == FEEDBACK_TYPE_END) {
+		_E("Invalid parameter : type(%s)", type);
+		return FEEDBACK_ERROR_INVALID_PARAMETER;
+	}
+
+	for (epattern = 0; epattern < FEEDBACK_PATTERN_END; ++epattern) {
+		if (!strncmp(pattern, str_pattern[epattern], strlen(pattern)))
+			break;
+	}
+
+	if (epattern == FEEDBACK_PATTERN_END) {
+		_E("Invalid parameter : pattern(%d)", pattern);
+		return FEEDBACK_ERROR_INVALID_PARAMETER;
+	}
+
+	return feedback_play_type(etype, epattern);
+}
+
+API int feedback_stop(void)
+{
+	/* check initialize */
+	if (!binit) {
+		_E("Not initialized");
+		return FEEDBACK_ERROR_NOT_INITIALIZED;
+	}
+
+	/* stop all device */
+	devices_stop();
+
+	return FEEDBACK_ERROR_NONE;
+}
+
 API int feedback_get_resource_path(feedback_type_e type, feedback_pattern_e pattern, char** path)
 {
 	const struct device_ops *dev;

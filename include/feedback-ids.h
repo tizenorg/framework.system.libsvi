@@ -110,6 +110,7 @@ typedef enum
 	FEEDBACK_PATTERN_UNLOCK,             	/**< feedback pattern when unlock */
 	FEEDBACK_PATTERN_LOCK_SWIPE,         	/**< feedback pattern when lock swipe */
 	FEEDBACK_PATTERN_UNLOCK_SWIPE,       	/**< feedback pattern when unlock swipe*/
+	FEEDBACK_PATTERN_GEOMETRIC_LOCK,     	/**< feedback pattern when lock by geometric effect */
 	FEEDBACK_PATTERN_CALLCONNECT,        	/**< feedback pattern when connecting call */
 	FEEDBACK_PATTERN_DISCALLCONNECT,     	/**< feedback pattern when disconnecting call */
 	FEEDBACK_PATTERN_OUTGOING_CALL,      	/**< feedback pattern when connected outgoing call */
@@ -140,11 +141,15 @@ typedef enum
 	FEEDBACK_PATTERN_GOAL_ACHIEVED,      	/**< feedback pattern when alerting goal achieved */
 	FEEDBACK_PATTERN_EXERCISE_COUNT,     	/**< feedback pattern when changing count number */
 	FEEDBACK_PATTERN_START_CUE,          	/**< feedback pattern when starting cue */
-	FEEDBACK_PATTERN_SUCCESS,            	/**< feedback pattern for success */
-	FEEDBACK_PATTERN_FAILURE,            	/**< feedback pattern for failure */
+	FEEDBACK_PATTERN_HEALTH_PACE,        	/**< feedback pattern when alerting health pace */
+	FEEDBACK_PATTERN_INACTIVE_TIME,      	/**< feedback pattern when alerting inactive time */
+	FEEDBACK_PATTERN_MEASURING_SUCCESS,  	/**< feedback pattern when measuring is succeeded */
+	FEEDBACK_PATTERN_MEASURING_FAILURE,  	/**< feedback pattern when measuring is failed */
+	FEEDBACK_PATTERN_UV_PROCESSING,      	/**< feedback pattern when UV is processing */
 	FEEDBACK_PATTERN_SHEALTH_START,      	/**< feedback pattern when starting s-health */
 	FEEDBACK_PATTERN_SHEALTH_PAUSE,      	/**< feedback pattern when pausing s-health */
 	FEEDBACK_PATTERN_SHEALTH_STOP,       	/**< feedback pattern when stoping s-health */
+	FEEDBACK_PATTERN_3RD_APPLICATION,    	/**< feedback pattern when alert 3rd event */
 
 	FEEDBACK_PATTERN_END,
 
@@ -162,6 +167,8 @@ typedef enum
 	FEEDBACK_PATTERN_BT_PARING = FEEDBACK_PATTERN_BT_PAIRING,
 	FEEDBACK_PATTERN_CONNECTED = FEEDBACK_PATTERN_BT_CONNECTED,
 	FEEDBACK_PATTERN_DISCONNECTED = FEEDBACK_PATTERN_BT_DISCONNECTED,
+	FEEDBACK_PATTERN_SUCCESS = FEEDBACK_PATTERN_MEASURING_SUCCESS,
+	FEEDBACK_PATTERN_FAILURE = FEEDBACK_PATTERN_MEASURING_FAILURE,
 	/* END : Will be removed */
 
 } feedback_pattern_e;

@@ -122,6 +122,7 @@ struct xmlData *xml_parse(xmlDocPtr doc, xmlNodePtr cur)
 			_D("label : %s", data->label);
 		} else if (!xmlStrcmp(node->name, (const xmlChar*)data_str[XML_DATA])) {
 			data->data = (char*)xmlNodeListGetString(doc, node->children, 1);
+			data->size = strlen(data->data);
 		}
 	}
 

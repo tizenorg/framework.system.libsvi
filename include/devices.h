@@ -25,6 +25,7 @@ struct device_ops {
 	void (*init) (void);
 	void (*exit) (void);
 	int (*play) (int);
+	int (*stop) (void);
 	int (*get_path) (int, char *, unsigned int);
 	int (*set_path) (int, char *);
 };
@@ -32,6 +33,7 @@ struct device_ops {
 void devices_init(void);
 void devices_exit(void);
 void devices_play(int pattern);
+void devices_stop(void);
 
 #ifndef __CONSTRUCTOR__
 #define __CONSTRUCTOR__ __attribute__ ((constructor))
